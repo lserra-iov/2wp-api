@@ -6,7 +6,8 @@ import {
   AccountBalance,
   AddressBalance,
   GetBalance,
-  Utxo, WalletAddress
+  Utxo,
+  WalletAddress,
 } from '../models';
 import {SessionRepository} from '../repositories';
 import {UtxoProvider} from '../services';
@@ -42,16 +43,19 @@ export class BalanceController {
   ): Promise<AccountBalance> {
     this.logger.debug(`[getBalance] Started with getBalance ${getBalance}`);
     return new Promise<AccountBalance>((resolve, reject) => {
-      const {areAllValid, classifiedList} = this.checkAndClassifyAddressList(getBalance.addressList);
-      if (!areAllValid) reject(new Error('Invalid address list provided, please check'));
-      const eventualUtxos = classifiedList.map((walletAddress) =>
+      const {areAllValid, classifiedList} = this.checkAndClassifyAddressList(
+        getBalance.addressList,
+      );
+      if (!areAllValid)
+        reject(new Error('Invalid address list provided, please check'));
+      const eventualUtxos = classifiedList.map(walletAddress =>
         Promise.all([
           walletAddress,
           this.utxoProviderService.utxoProvider(walletAddress.address),
         ]),
       );
       Promise.all(eventualUtxos)
-        .then((addressUtxos) =>
+        .then(addressUtxos =>
           addressUtxos.map(
             ([walletAddress, utxoList]) =>
               new AddressBalance({
@@ -63,7 +67,10 @@ export class BalanceController {
         )
         .then(addressBalances => {
           return Promise.all([
-            this.sessionRepository.addUxos(getBalance.sessionId, addressBalances),
+            this.sessionRepository.addUxos(
+              getBalance.sessionId,
+              addressBalances,
+            ),
             addressBalances,
           ]);
         })
@@ -78,18 +85,25 @@ export class BalanceController {
           resolve(accBalance);
         })
         .catch(reason => {
-          this.logger.warn(`[getBalance] Something went wrong. error: `, reason);
+          this.logger.warn(
+            `[getBalance] Something went wrong. error: `,
+            reason,
+          );
           reject(reason);
         });
     });
   }
 
-  private checkAndClassifyAddressList(addressList: WalletAddress[])
-    :{ areAllValid: boolean; classifiedList: WalletAddress[]} {
+  private checkAndClassifyAddressList(addressList: WalletAddress[]): {
+    areAllValid: boolean;
+    classifiedList: WalletAddress[];
+  } {
     let areAllValid = true;
     const classifiedList = addressList;
     for (const walletAddress of addressList) {
-      const { valid, addressType } = this.btcAddressUtils.validateAddress(walletAddress.address);
+      const {valid, addressType} = this.btcAddressUtils.validateAddress(
+        walletAddress.address,
+      );
       areAllValid = areAllValid && valid;
       if (valid) walletAddress.addressType = addressType;
     }

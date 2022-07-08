@@ -2,7 +2,6 @@ import {Model, model, property} from '@loopback/repository';
 
 @model({settings: {strict: false}})
 export class BitcoinAddress extends Model {
-
   @property({
     type: 'number',
   })
@@ -73,4 +72,5 @@ export interface BitcoinAddressRelations {
   // describe navigational properties here
 }
 
-export type BitcoinAddressWithRelations = BitcoinAddress & BitcoinAddressRelations;
+export type BitcoinAddressWithRelations = BitcoinAddress &
+  BitcoinAddressRelations;

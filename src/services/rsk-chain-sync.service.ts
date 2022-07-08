@@ -1,6 +1,9 @@
 import {inject} from '@loopback/core';
 import {getLogger, Logger} from 'log4js';
-import {ConstantsBindings, ServicesBindings} from '../dependency-injection-bindings';
+import {
+  ConstantsBindings,
+  ServicesBindings,
+} from '../dependency-injection-bindings';
 import {RskBlock} from '../models/rsk/rsk-block.model';
 import {SyncStatusModel} from '../models/rsk/sync-status.model';
 import {RskNodeService} from './rsk-node.service';
@@ -28,7 +31,7 @@ export class RskChainSyncService {
     @inject(ConstantsBindings.INITIAL_BLOCK)
     defaultInitialBlock: RskBlock,
     @inject(ConstantsBindings.MIN_DEPTH_FOR_SYNC)
-    minDepthForSync: number
+    minDepthForSync: number,
   ) {
     this.syncStorageService = syncStorageService;
     this.rskNodeService = rskNodeService;
@@ -40,24 +43,32 @@ export class RskChainSyncService {
   }
 
   private async deleteOldBlock(block: SyncStatusModel): Promise<void> {
-    this.logger.trace(`[deleteOldBlock] going to delete block ${block.rskBlockHeight} (${block.rskBlockHash})`);
+    this.logger.trace(
+      `[deleteOldBlock] going to delete block ${block.rskBlockHeight} (${block.rskBlockHash})`,
+    );
     await this.syncStorageService.delete(block.rskBlockHash);
 
     const deletedBlock = new RskBlock(
       block.rskBlockHeight,
       block.rskBlockHash,
-      block.rskBlockParentHash
+      block.rskBlockParentHash,
     );
     this.subscribers.forEach(s => s.blockDeleted(deletedBlock));
   }
 
   private async addNewBlocks(blocksToAdd: Array<RskBlock>): Promise<void> {
-    this.logger.trace(`[addNewBlocks] going to add ${blocksToAdd.length} blocks`);
+    this.logger.trace(
+      `[addNewBlocks] going to add ${blocksToAdd.length} blocks`,
+    );
     while (blocksToAdd.length > 0) {
-      const blockToAdd = <RskBlock>(blocksToAdd.pop());
+      const blockToAdd = <RskBlock>blocksToAdd.pop();
 
-      this.logger.trace(`[addNewBlocks] going to add block ${blockToAdd.height} (${blockToAdd.hash})`);
-      await this.syncStorageService.set(this.blockToSyncStatusDataModel(blockToAdd));
+      this.logger.trace(
+        `[addNewBlocks] going to add block ${blockToAdd.height} (${blockToAdd.hash})`,
+      );
+      await this.syncStorageService.set(
+        this.blockToSyncStatusDataModel(blockToAdd),
+      );
 
       this.subscribers.forEach(s => s.blockAdded(blockToAdd));
     }
@@ -101,10 +112,12 @@ export class RskChainSyncService {
         if (!result) {
           this.logger.debug(
             'No sync data on storage! starting from default height',
-            this.defaultInitialBlock.toString()
+            this.defaultInitialBlock.toString(),
           );
           // TODO: should I store this and notify subscribers?
-          const syncStatusModel = this.blockToSyncStatusDataModel(this.defaultInitialBlock);
+          const syncStatusModel = this.blockToSyncStatusDataModel(
+            this.defaultInitialBlock,
+          );
           return syncStatusModel;
         }
         return <SyncStatusModel>result;
@@ -114,27 +127,42 @@ export class RskChainSyncService {
 
   public async sync(): Promise<void> {
     let dbBestBlock = await this.getSyncStatus();
-    const rskBestBlock = RskBlock.fromWeb3Block(await this.rskNodeService.getBlock('latest', false));
+    const rskBestBlock = RskBlock.fromWeb3Block(
+      await this.rskNodeService.getBlock('latest', false),
+    );
     // In case the db is synced with a forked chain and that forked chain is longer than the main chain,
     // remove all extra forked blocks from the db + 1 as an offset so the following logic handles it appropriately.
-    if(rskBestBlock.height < dbBestBlock.rskBlockHeight) {
-      this.logger.debug(`[sync] Main chain is shorter than synced chain. Main chain height: ${rskBestBlock.height}, synced height: ${dbBestBlock.rskBlockHeight}`);
-      let countOfBlocksToRemove = dbBestBlock.rskBlockHeight - rskBestBlock.height + this.minDepthForSync + 1;
-      while(countOfBlocksToRemove !== 0) {
+    if (rskBestBlock.height < dbBestBlock.rskBlockHeight) {
+      this.logger.debug(
+        `[sync] Main chain is shorter than synced chain. Main chain height: ${rskBestBlock.height}, synced height: ${dbBestBlock.rskBlockHeight}`,
+      );
+      let countOfBlocksToRemove =
+        dbBestBlock.rskBlockHeight -
+        rskBestBlock.height +
+        this.minDepthForSync +
+        1;
+      while (countOfBlocksToRemove !== 0) {
         await this.deleteOldBlock(dbBestBlock);
-        dbBestBlock = await this.syncStorageService.getById(dbBestBlock.rskBlockParentHash);
+        dbBestBlock = await this.syncStorageService.getById(
+          dbBestBlock.rskBlockParentHash,
+        );
         countOfBlocksToRemove--;
       }
     }
 
     // Only sync blocks that are buried in the configured depth
-    if(dbBestBlock.rskBlockHeight >= rskBestBlock.height - this.minDepthForSync) {
+    if (
+      dbBestBlock.rskBlockHeight >=
+      rskBestBlock.height - this.minDepthForSync
+    ) {
       return;
     }
 
     this.logger.debug(`[sync] Found block(s) to sync!`);
 
-    let nextBlock = RskBlock.fromWeb3BlockWithTransactions(await this.rskNodeService.getBlock(dbBestBlock.rskBlockHeight + 1));
+    let nextBlock = RskBlock.fromWeb3BlockWithTransactions(
+      await this.rskNodeService.getBlock(dbBestBlock.rskBlockHeight + 1),
+    );
     const blocksToAdd: Array<RskBlock> = [];
     // Stack to insert new block on db (new Best block)
     blocksToAdd.push(nextBlock);
@@ -143,15 +171,21 @@ export class RskChainSyncService {
       // Delete forked block
       await this.deleteOldBlock(dbBestBlock);
       // Go back until finding the split point
-      dbBestBlock = await this.syncStorageService.getById(dbBestBlock.rskBlockParentHash);
-      nextBlock = RskBlock.fromWeb3BlockWithTransactions(await this.rskNodeService.getBlock(nextBlock.height - 1));
+      dbBestBlock = await this.syncStorageService.getById(
+        dbBestBlock.rskBlockParentHash,
+      );
+      nextBlock = RskBlock.fromWeb3BlockWithTransactions(
+        await this.rskNodeService.getBlock(nextBlock.height - 1),
+      );
       // Include this block in the stack as well (new Reorganized block)
       blocksToAdd.push(nextBlock);
     }
 
     if (blocksToAdd.length > 1) {
       // There was a fork
-      this.logger.debug(`There was a fork on the network with depth ${blocksToAdd.length}`);
+      this.logger.debug(
+        `There was a fork on the network with depth ${blocksToAdd.length}`,
+      );
     }
 
     // Add the blocks from the oldest to the newest
@@ -163,10 +197,9 @@ export class RskChainSyncService {
   }
 
   public unsubscribe(subscriber: RskChainSyncSubscriber): void {
-    const idx = this.subscribers.findIndex((s) => s === subscriber);
+    const idx = this.subscribers.findIndex(s => s === subscriber);
     if (idx != -1) {
       this.subscribers.splice(idx, 1);
     }
   }
-
 }

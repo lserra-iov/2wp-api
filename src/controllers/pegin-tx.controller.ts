@@ -37,7 +37,9 @@ export class PeginTxController {
     })
     createPeginTxData: CreatePeginTxData,
   ): Promise<NormalizedTx> {
-    this.logger.debug(`[create] started with session: ${createPeginTxData.sessionId}`);
+    this.logger.debug(
+      `[create] started with session: ${createPeginTxData.sessionId}`,
+    );
     return new Promise<NormalizedTx>((resolve, reject) => {
       const outputs: TxOutput[] = [];
       const network = process.env.NETWORK ?? 'testnet';
@@ -50,7 +52,9 @@ export class PeginTxController {
         : false;
       if (!validAddress)
         reject(
-          new Error(`Invalid Refund Address provided ${createPeginTxData.refundAddress} for network ${network}`),
+          new Error(
+            `Invalid Refund Address provided ${createPeginTxData.refundAddress} for network ${network}`,
+          ),
         );
       Promise.all([
         this.sessionRepository.getAccountInputs(createPeginTxData.sessionId),
@@ -61,10 +65,23 @@ export class PeginTxController {
         bridgeService.getFederationAddress(),
       ])
         .then(([inputs, fee, federationAddress]) => {
-          if (!inputs.length) reject(new Error(`There are no inputs selected for this sessionId ${createPeginTxData.sessionId}`))
-          const inputsAmount = inputs.reduce((acc, curr) => ({amount: acc.amount + curr.amount}));
-          if (inputsAmount.amount - (createPeginTxData.amountToTransferInSatoshi + fee) < 0) {
-            return reject(new Error('The stored input list has not enough amount'));
+          if (!inputs.length)
+            reject(
+              new Error(
+                `There are no inputs selected for this sessionId ${createPeginTxData.sessionId}`,
+              ),
+            );
+          const inputsAmount = inputs.reduce((acc, curr) => ({
+            amount: acc.amount + curr.amount,
+          }));
+          if (
+            inputsAmount.amount -
+              (createPeginTxData.amountToTransferInSatoshi + fee) <
+            0
+          ) {
+            return reject(
+              new Error('The stored input list has not enough amount'),
+            );
           }
           outputs.push(
             this.getRSKOutput(
@@ -83,9 +100,9 @@ export class PeginTxController {
             createPeginTxData.changeAddress,
             createPeginTxData.amountToTransferInSatoshi,
             fee,
-            );
+          );
           const burnDustValue = Number(process.env.BURN_DUST_VALUE) ?? 2000;
-          if (Number(changeOutput.amount) > burnDustValue ) {
+          if (Number(changeOutput.amount) > burnDustValue) {
             outputs.push(changeOutput);
           }
           this.logger.trace('[create] Created pegin successfully!');
@@ -96,7 +113,7 @@ export class PeginTxController {
             }),
           );
         })
-        .catch((reason) => {
+        .catch(reason => {
           this.logger.warn(`[create] There was an error: ${reason}`);
           return reject(reason);
         });
@@ -140,8 +157,10 @@ export class PeginTxController {
     fee: number,
   ): TxOutput {
     let capacity = 0;
-    const amountToTransferPlusFee = new SatoshiBig(amountToTransferInSatoshi, 'satoshi')
-      .plus(new SatoshiBig(fee, 'satoshi'));
+    const amountToTransferPlusFee = new SatoshiBig(
+      amountToTransferInSatoshi,
+      'satoshi',
+    ).plus(new SatoshiBig(fee, 'satoshi'));
     inputs.forEach(input => {
       capacity += input.amount ? +input.amount : 0;
     });
@@ -149,7 +168,9 @@ export class PeginTxController {
       changeAddress = inputs[0].address;
     }
     return new TxOutput({
-      amount: new SatoshiBig(capacity, 'satoshi').minus(amountToTransferPlusFee).toSatoshiString(),
+      amount: new SatoshiBig(capacity, 'satoshi')
+        .minus(amountToTransferPlusFee)
+        .toSatoshiString(),
       address: changeAddress,
     });
   }

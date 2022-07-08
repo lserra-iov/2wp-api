@@ -1,12 +1,15 @@
 import Web3 from 'web3';
-import { BlockTransactionObject } from 'web3-eth';
+import {BlockTransactionObject} from 'web3-eth';
 
 export class RskNodeService {
   web3: Web3;
   constructor() {
     this.web3 = new Web3(`${process.env.RSK_NODE_HOST}`);
   }
-  getBlock(block: string | number, withTransactions = true): Promise<BlockTransactionObject> {
+  getBlock(
+    block: string | number,
+    withTransactions = true,
+  ): Promise<BlockTransactionObject> {
     return this.web3.eth.getBlock(block, withTransactions);
   }
   getTransactionReceipt(txHash: string): Promise<any> {

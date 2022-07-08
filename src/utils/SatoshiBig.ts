@@ -1,4 +1,4 @@
-import Big, { BigSource } from 'big.js';
+import Big, {BigSource} from 'big.js';
 
 const numberRegex = /^[0-9]*(\.[0-9]*)?$/;
 
@@ -7,8 +7,8 @@ type BTCCurrency = 'satoshi' | 'mbtc' | 'btc';
 export default class SatoshiBig extends Big {
   constructor(src: number | string | Big, currency: BTCCurrency) {
     const safeSrc = src ? src.toString() : '0';
-    const safeBig: Big = src instanceof Big
-      ? src : Big(numberRegex.test(safeSrc) ? safeSrc : '0');
+    const safeBig: Big =
+      src instanceof Big ? src : Big(numberRegex.test(safeSrc) ? safeSrc : '0');
     switch (currency) {
       case 'satoshi':
         super(safeBig.toFixed(0));
@@ -61,7 +61,9 @@ export default class SatoshiBig extends Big {
   }
 
   toUSDFromBTCString(price: number | string | Big, decimals = 2): string {
-    const safePrice: Big = Big(numberRegex.test(price.toString()) ? price : '0');
+    const safePrice: Big = Big(
+      numberRegex.test(price.toString()) ? price : '0',
+    );
     return Big(this.toBTCString()).mul(safePrice).toFixed(decimals);
   }
 }

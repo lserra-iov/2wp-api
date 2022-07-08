@@ -14,9 +14,7 @@ export class AddressUsedStatus extends Model {
   })
   unused: boolean;
 
-
   constructor(data?: Partial<AddressUsedStatus>) {
     super(data);
   }
 }
-

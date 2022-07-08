@@ -35,7 +35,11 @@ export class BroadcastController {
       this.broadcastProvider
         .broadcast(req.data)
         .then(([txStatus]) => {
-          this.logger.trace(`[sendTx] Broadcasted! txId:${txStatus.result ?? 'n/a'}. Error: ${txStatus.error ?? 'n/a'}`);
+          this.logger.trace(
+            `[sendTx] Broadcasted! txId:${txStatus.result ?? 'n/a'}. Error: ${
+              txStatus.error ?? 'n/a'
+            }`,
+          );
           return resolve(
             new BroadcastResponse({
               txId: txStatus.result ?? '',
@@ -43,7 +47,7 @@ export class BroadcastController {
             }),
           );
         })
-        .catch((reason) => {
+        .catch(reason => {
           this.logger.warn(`[sendTx] Something went wrong. error: ${reason}`);
           return reject(reason);
         });

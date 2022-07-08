@@ -1,7 +1,11 @@
 import {Application, BindingScope} from '@loopback/core';
 import {TxV2ProviderDataSource} from './datasources';
 import {MongoDbDataSource} from './datasources/mongodb.datasource';
-import {ConstantsBindings, DatasourcesBindings, ServicesBindings} from './dependency-injection-bindings';
+import {
+  ConstantsBindings,
+  DatasourcesBindings,
+  ServicesBindings,
+} from './dependency-injection-bindings';
 import {RskBlock} from './models/rsk/rsk-block.model';
 import {BitcoinService, BridgeService, PeginStatusService} from './services';
 import {DaemonService} from './services/daemon.service';
@@ -42,11 +46,13 @@ export class DependencyInjectionHandler {
 
     app
       .bind(ConstantsBindings.INITIAL_BLOCK)
-      .to(new RskBlock(
-        parseInt(process.env.SYNC_INITIAL_BLOCK_HEIGHT || '0'),
-        process.env.SYNC_INITIAL_BLOCK_HASH || '',
-        process.env.SYNC_INITIAL_BLOCK_PREV_HASH || ''
-      ));
+      .to(
+        new RskBlock(
+          parseInt(process.env.SYNC_INITIAL_BLOCK_HEIGHT || '0'),
+          process.env.SYNC_INITIAL_BLOCK_HASH || '',
+          process.env.SYNC_INITIAL_BLOCK_PREV_HASH || '',
+        ),
+      );
 
     app
       .bind(ConstantsBindings.MIN_DEPTH_FOR_SYNC)
@@ -67,7 +73,6 @@ export class DependencyInjectionHandler {
       .bind(DatasourcesBindings.TX_V2_PROVIDER)
       .toClass(TxV2ProviderDataSource)
       .inScope(BindingScope.SINGLETON);
-
   }
 
   private static configureServices(app: Application): void {
@@ -121,10 +126,9 @@ export class DependencyInjectionHandler {
       .toClass(UnusedAddressService)
       .inScope(BindingScope.SINGLETON);
 
-      app
+    app
       .bind(ServicesBindings.RSK_BLOCK_PROCESSOR_PUBLISHER)
       .toClass(NodeBridgeDataProvider)
       .inScope(BindingScope.SINGLETON);
-
   }
 }

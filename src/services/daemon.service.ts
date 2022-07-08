@@ -1,6 +1,9 @@
 import {inject} from '@loopback/core';
 import {getLogger, Logger} from 'log4js';
-import {ConstantsBindings, ServicesBindings} from '../dependency-injection-bindings';
+import {
+  ConstantsBindings,
+  ServicesBindings,
+} from '../dependency-injection-bindings';
 import {RskBlock} from '../models/rsk/rsk-block.model';
 import {getMetricLogger} from '../utils/metric-logger';
 import {PeginStatusDataService} from './pegin-status-data-services/pegin-status-data.service';
@@ -12,7 +15,7 @@ export class DaemonService implements iDaemonService {
   peginStatusStorageService: PeginStatusDataService;
   syncService: RskChainSyncService;
   peginDataProcessor: PeginDataProcessor;
-  rskBlockProcessorPublisher: RskBlockProcessorPublisher
+  rskBlockProcessorPublisher: RskBlockProcessorPublisher;
 
   dataFetchInterval: NodeJS.Timer;
   started: boolean;
@@ -31,7 +34,7 @@ export class DaemonService implements iDaemonService {
     @inject(ConstantsBindings.SYNC_INTERVAL_TIME)
     syncIntervalTime: string | undefined,
     @inject(ServicesBindings.PEGIN_DATA_PROCESSOR)
-    peginDataProcessor: PeginDataProcessor
+    peginDataProcessor: PeginDataProcessor,
   ) {
     this.peginStatusStorageService = peginStatusStorageService;
     this.syncService = syncService;
@@ -74,7 +77,9 @@ export class DaemonService implements iDaemonService {
       if (this.lastSyncLog >= 5) {
         this.lastSyncLog = 0;
         const bestBlock = await this.syncService.getSyncStatus();
-        this.logger.debug(`Sync status => Best block is ${bestBlock.rskBlockHeight}[${bestBlock.rskBlockHash}]`);
+        this.logger.debug(
+          `Sync status => Best block is ${bestBlock.rskBlockHeight}[${bestBlock.rskBlockHash}]`,
+        );
       }
       await this.syncService.sync();
     } catch (error) {
@@ -93,8 +98,8 @@ export class DaemonService implements iDaemonService {
 
     await this.syncService.start();
     this.syncService.subscribe({
-      blockAdded: (block) => this.handleNewBestBlock(block),
-      blockDeleted: (block) => this.handleDeleteBlock(block)
+      blockAdded: block => this.handleNewBestBlock(block),
+      blockDeleted: block => this.handleDeleteBlock(block),
     });
 
     this.rskBlockProcessorPublisher.addSubscriber(this.peginDataProcessor);
@@ -111,13 +116,12 @@ export class DaemonService implements iDaemonService {
       this.started = false;
       this.logger.trace('Stopping');
       clearInterval(this.dataFetchInterval);
-      await this.peginStatusStorageService.stop()
+      await this.peginStatusStorageService.stop();
       await this.syncService.stop();
       this.rskBlockProcessorPublisher.removeSubscriber(this.peginDataProcessor);
       this.logger.debug('Stopped');
     }
   }
-
 }
 
 export interface iDaemonService {

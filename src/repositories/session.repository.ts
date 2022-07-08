@@ -7,7 +7,6 @@ import {AddressBalance, FeeAmountData, Session, TxInput, Utxo} from '../models';
 import {BtcAddressUtils} from '../utils/btc-utils';
 
 export class SessionRepository extends DefaultKeyValueRepository<Session> {
-
   logger: Logger;
   btcAddressUtils: BtcAddressUtils = new BtcAddressUtils();
 
@@ -23,7 +22,9 @@ export class SessionRepository extends DefaultKeyValueRepository<Session> {
         .then(({addressList}) => {
           addressList?.forEach(({address, utxoList}) => {
             if (
-              utxoList && this.btcAddressUtils.validateAddress(address).addressType === accountType
+              utxoList &&
+              this.btcAddressUtils.validateAddress(address).addressType ===
+                accountType
             )
               finalUtxoList = finalUtxoList.concat(
                 utxoList.map(utxo => Object.assign({address}, utxo)),
@@ -61,14 +62,15 @@ export class SessionRepository extends DefaultKeyValueRepository<Session> {
   addUxos(sessionId: string, addressBalances: AddressBalance[]): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       this.get(sessionId)
-        .then((sessionObject) => {
-          sessionObject.addressList = sessionObject.addressList ?
-            [...sessionObject.addressList, ...addressBalances] : addressBalances;
-          return this.set(sessionId, sessionObject)
+        .then(sessionObject => {
+          sessionObject.addressList = sessionObject.addressList
+            ? [...sessionObject.addressList, ...addressBalances]
+            : addressBalances;
+          return this.set(sessionId, sessionObject);
         })
         .then(resolve)
         .catch(reject);
-    })
+    });
   }
 
   getFeeLevel(sessionId: string, feeLevel: string): Promise<number> {

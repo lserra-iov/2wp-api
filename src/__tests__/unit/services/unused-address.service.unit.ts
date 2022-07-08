@@ -5,15 +5,14 @@ import {BitcoinService, UnusedAddressService} from '../../../services';
 import {AddressUsedStatus, UnusedAddressResponse} from '../../../models';
 
 describe('Service: UnusedAddress', () => {
-
   afterEach(function () {
     sinon.restore();
   });
 
   const mockBitcoinService = () => {
-
-    const mockedBitcoinService =
-      sinon.createStubInstance(BitcoinService) as SinonStubbedInstance<BitcoinService> & BitcoinService;
+    const mockedBitcoinService = sinon.createStubInstance(
+      BitcoinService,
+    ) as SinonStubbedInstance<BitcoinService> & BitcoinService;
 
     const addressA: BitcoinAddress = new BitcoinAddress();
     addressA.address = 'a';
@@ -46,7 +45,7 @@ describe('Service: UnusedAddress', () => {
     mockedBitcoinService.getAddressInfo.withArgs('e').resolves(addressE);
 
     return mockedBitcoinService;
-  }
+  };
   const expectedResponses: AddressUsedStatus[] = [
     new AddressUsedStatus({
       address: 'a',
@@ -71,11 +70,12 @@ describe('Service: UnusedAddress', () => {
   ];
 
   it('isUnusedAddresses empty list', async () => {
-    const mockedBitcoinService
-      = sinon.createStubInstance(BitcoinService) as SinonStubbedInstance<BitcoinService> & BitcoinService;
+    const mockedBitcoinService = sinon.createStubInstance(
+      BitcoinService,
+    ) as SinonStubbedInstance<BitcoinService> & BitcoinService;
     const thisService = new UnusedAddressService(mockedBitcoinService);
     const result = await thisService.isUnusedAddresses([]);
-    expect(result).to.be.eql(new UnusedAddressResponse({ data : []}));
+    expect(result).to.be.eql(new UnusedAddressResponse({data: []}));
     sinon.assert.neverCalledWith(mockedBitcoinService.getAddressInfo);
   });
   it('getPeginSatusInfo list unused addresses ', async () => {
@@ -83,10 +83,13 @@ describe('Service: UnusedAddress', () => {
     const thisService = new UnusedAddressService(mockedBitcoinService);
     const request = ['a', 'd'];
     const result = await thisService.isUnusedAddresses(request);
-    expect(result).to.be.eql(new UnusedAddressResponse({
-      data: expectedResponses
-        .filter((res) => request.indexOf(res.address) !== -1)
-    }));
+    expect(result).to.be.eql(
+      new UnusedAddressResponse({
+        data: expectedResponses.filter(
+          res => request.indexOf(res.address) !== -1,
+        ),
+      }),
+    );
     sinon.assert.calledTwice(mockedBitcoinService.getAddressInfo);
   });
   it('getPeginSatusInfo list used addresses ', async () => {
@@ -95,10 +98,13 @@ describe('Service: UnusedAddress', () => {
     const thisService = new UnusedAddressService(mockedBitcoinService);
     const request = ['b', 'c', 'e'];
     const result = await thisService.isUnusedAddresses(request);
-    expect(result).to.be.eql(new UnusedAddressResponse({
-      data: expectedResponses
-        .filter((res) => request.indexOf(res.address) !== -1)
-    }));
+    expect(result).to.be.eql(
+      new UnusedAddressResponse({
+        data: expectedResponses.filter(
+          res => request.indexOf(res.address) !== -1,
+        ),
+      }),
+    );
     sinon.assert.callCount(mockedBitcoinService.getAddressInfo, 3);
   });
   it('getPeginSatusInfo first unused address, second used address', async () => {
@@ -107,10 +113,13 @@ describe('Service: UnusedAddress', () => {
     const thisService = new UnusedAddressService(mockedBitcoinService);
     const request = ['a', 'b', 'c'];
     const result = await thisService.isUnusedAddresses(request);
-    expect(result).to.be.eql(new UnusedAddressResponse({
-      data: expectedResponses
-        .filter((res) => request.indexOf(res.address) !== -1)
-    }));
+    expect(result).to.be.eql(
+      new UnusedAddressResponse({
+        data: expectedResponses.filter(
+          res => request.indexOf(res.address) !== -1,
+        ),
+      }),
+    );
     sinon.assert.callCount(mockedBitcoinService.getAddressInfo, 3);
   });
   it('getPeginSatusInfo just sent values', async () => {
@@ -119,10 +128,13 @@ describe('Service: UnusedAddress', () => {
     const thisService = new UnusedAddressService(mockedBitcoinService);
     const request = ['c'];
     const result = await thisService.isUnusedAddresses(request);
-    expect(result).to.be.eql(new UnusedAddressResponse({
-      data: expectedResponses
-        .filter((res) => request.indexOf(res.address) !== -1)
-    }));
+    expect(result).to.be.eql(
+      new UnusedAddressResponse({
+        data: expectedResponses.filter(
+          res => request.indexOf(res.address) !== -1,
+        ),
+      }),
+    );
     sinon.assert.calledOnce(mockedBitcoinService.getAddressInfo);
   });
   it('getPeginSatusInfo just received values', async () => {
@@ -131,10 +143,13 @@ describe('Service: UnusedAddress', () => {
     const thisService = new UnusedAddressService(mockedBitcoinService);
     const request = ['e'];
     const result = await thisService.isUnusedAddresses(request);
-    expect(result).to.be.eql(new UnusedAddressResponse({
-      data: expectedResponses
-        .filter((res) => request.indexOf(res.address) !== -1)
-    }));
+    expect(result).to.be.eql(
+      new UnusedAddressResponse({
+        data: expectedResponses.filter(
+          res => request.indexOf(res.address) !== -1,
+        ),
+      }),
+    );
     sinon.assert.calledOnce(mockedBitcoinService.getAddressInfo);
   });
-})
+});

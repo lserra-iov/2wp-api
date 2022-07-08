@@ -1,2 +1,8 @@
 dist
 *.json
+coverage/
+*.yml
+*.md
+*.html
+*.htm
+*.env

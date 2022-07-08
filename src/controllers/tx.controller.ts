@@ -36,7 +36,7 @@ export class TxController {
           this.logger.trace(`[getTx] found tx!`);
           return resolve(new Tx(tx));
         })
-        .catch((reason) => {
+        .catch(reason => {
           this.logger.warn(`[getTx] Got an error: ${reason}`);
           return reject(reason);
         });

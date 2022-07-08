@@ -6,8 +6,7 @@ const packageJson = require('../../package.json');
 export class ApiInformationController {
   logger: Logger;
 
-  constructor(
-  ) {
+  constructor() {
     this.logger = getLogger('api-information-controller');
   }
 
@@ -23,7 +22,7 @@ export class ApiInformationController {
       },
     },
   })
-  getApiInformation():ApiInformation {
+  getApiInformation(): ApiInformation {
     const version = packageJson.version;
     this.logger.debug(`[getApiInformation] current version : ${version}`);
     const apiInfo = new ApiInformation();

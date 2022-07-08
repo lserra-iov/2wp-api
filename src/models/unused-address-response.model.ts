@@ -10,9 +10,7 @@ export class UnusedAddressResponse extends Model {
   })
   data: AddressUsedStatus[];
 
-
   constructor(data?: Partial<UnusedAddressResponse>) {
     super(data);
   }
 }
-

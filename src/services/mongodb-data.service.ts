@@ -7,14 +7,16 @@ import {SearchableModel} from '../models/rsk/searchable-model';
 import {getMetricLogger} from '../utils/metric-logger';
 import {GenericDataService} from './generic-data-service';
 
-export abstract class MongoDbDataService<Type extends SearchableModel, T> implements GenericDataService<Type> {
+export abstract class MongoDbDataService<Type extends SearchableModel, T>
+  implements GenericDataService<Type>
+{
   mongoDbUri: string;
   logger: Logger;
   db: mongoose.Mongoose;
   mongoDbDataSource: MongoDbDataSource;
   constructor(
     @inject(DatasourcesBindings.MONGO_DB_DATASOURCE)
-    mongoDbDataSource: MongoDbDataSource
+    mongoDbDataSource: MongoDbDataSource,
   ) {
     this.mongoDbDataSource = mongoDbDataSource;
     this.logger = getLogger(this.getLoggerName());
@@ -37,7 +39,7 @@ export abstract class MongoDbDataService<Type extends SearchableModel, T> implem
       return this.getConnector()
         .findOne(this.getByIdFilter(id))
         .exec()
-        .then((result: any) => (<Type>result)); // The db model matches the DTO model so parsing it should do the trick
+        .then((result: any) => <Type>result); // The db model matches the DTO model so parsing it should do the trick
     });
   }
 
@@ -45,7 +47,7 @@ export abstract class MongoDbDataService<Type extends SearchableModel, T> implem
     return this.getConnector()
       .find(this.getManyFilter(query))
       .exec()
-      .then(result => result.map((r: any) => (<Type>r)));
+      .then(result => result.map((r: any) => <Type>r));
   }
 
   set(data: Type): Promise<boolean> {
@@ -64,15 +66,20 @@ export abstract class MongoDbDataService<Type extends SearchableModel, T> implem
         const connector = this.getConnector();
         const filter: any = {};
         filter[data.getIdFieldName()] = data.getId();
-        connector.findOneAndUpdate(filter, <any>data, {upsert: true}, (err: any) => {
-          metricLogger();
-          if (err) {
-            this.logger.debug('There was an error trying to save data', err);
-            reject(err);
-          } else {
-            resolve(true);
-          }
-        })
+        connector.findOneAndUpdate(
+          filter,
+          <any>data,
+          {upsert: true},
+          (err: any) => {
+            metricLogger();
+            if (err) {
+              this.logger.debug('There was an error trying to save data', err);
+              reject(err);
+            } else {
+              resolve(true);
+            }
+          },
+        );
       });
     });
   }
@@ -85,16 +92,14 @@ export abstract class MongoDbDataService<Type extends SearchableModel, T> implem
   }
 
   start(): Promise<void> {
-    return this.mongoDbDataSource.getConnection()
-      .then((connection) => {
-        this.db = connection;
-        this.logger.debug('Service started')
-      });
+    return this.mongoDbDataSource.getConnection().then(connection => {
+      this.db = connection;
+      this.logger.debug('Service started');
+    });
   }
 
   stop(): Promise<void> {
     this.logger.debug('Service stopped');
     return Promise.resolve();
   }
-
 }

@@ -114,7 +114,7 @@ describe('Pegin Tx Controller', () => {
         ],
       })
       .expect(200);
-    const amountToTransfer = balance.body.nativeSegwit - 100000
+    const amountToTransfer = balance.body.nativeSegwit - 100000;
     await client
       .post('/tx-fee')
       .send({

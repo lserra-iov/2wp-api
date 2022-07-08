@@ -2,7 +2,6 @@ import {Model, model, property} from '@loopback/repository';
 
 @model()
 export class AddressList extends Model {
-
   @property({
     type: 'array',
     itemType: 'string',

@@ -1,4 +1,3 @@
-
 export const ConstantsBindings = {
   MONGO_DB_USER: 'constants.mongoDbUser',
   MONGO_DB_PASSWORD: 'constants.mongoDbPassword',
@@ -8,12 +7,12 @@ export const ConstantsBindings = {
   MONGO_DB_AUTH_SOURCE: 'constants.mongoDbAuthSource',
   INITIAL_BLOCK: 'constants.initialBlock',
   MIN_DEPTH_FOR_SYNC: 'constants.minDepthForSync',
-  SYNC_INTERVAL_TIME: 'constants.syncIntervalTime'
+  SYNC_INTERVAL_TIME: 'constants.syncIntervalTime',
 };
 
 export const DatasourcesBindings = {
   MONGO_DB_DATASOURCE: 'datasources.MongoDbDataSource',
-  TX_V2_PROVIDER: 'datasources.txV2Provider'
+  TX_V2_PROVIDER: 'datasources.txV2Provider',
 };
 
 export const ServicesBindings = {
@@ -28,5 +27,5 @@ export const ServicesBindings = {
   BRIDGE_SERVICE: 'services.BridgeService',
   ADDRESS_SERVICE: 'services.AddressService',
   UNUSED_ADDRESS_SERVICE: 'services.UnusedAddressService',
-  RSK_BLOCK_PROCESSOR_PUBLISHER: 'services.RskBlockProcessorPublisher'
+  RSK_BLOCK_PROCESSOR_PUBLISHER: 'services.RskBlockProcessorPublisher',
 };

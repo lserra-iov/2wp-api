@@ -49,7 +49,8 @@ export class BitcoinService {
 
   getAddressInfo(address: string): Promise<BitcoinAddress> {
     return new Promise<BitcoinAddress>((resolve, reject) => {
-      this.addressService.addressProvider(address)
+      this.addressService
+        .addressProvider(address)
         .then((tx: any) => {
           const responseAddress = new BitcoinAddress();
           responseAddress.address = tx[0].address;
@@ -72,5 +73,4 @@ export class BitcoinService {
         });
     });
   }
-
 }

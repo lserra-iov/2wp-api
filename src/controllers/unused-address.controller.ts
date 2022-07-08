@@ -10,7 +10,7 @@ export class UnusedAddressController {
 
   constructor(
     @inject(ServicesBindings.UNUSED_ADDRESS_SERVICE)
-    protected unusedAddressService: UnusedAddressService
+    protected unusedAddressService: UnusedAddressService,
   ) {
     this.logger = getLogger('unused-address-controller');
   }
@@ -31,7 +31,9 @@ export class UnusedAddressController {
     @requestBody({schema: getModelSchemaRef(AddressList)})
     addressList: AddressList,
   ): Promise<UnusedAddressResponse> {
-    this.logger.trace(`[isUnusedAddresses] Starting with addressList ${addressList}`);
+    this.logger.trace(
+      `[isUnusedAddresses] Starting with addressList ${addressList}`,
+    );
     return this.unusedAddressService.isUnusedAddresses(addressList.addressList);
   }
 }
