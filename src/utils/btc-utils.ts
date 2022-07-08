@@ -3,6 +3,8 @@ import {getLogger, Logger} from 'log4js';
 import {remove0x} from './hex-utils';
 import {doubleSha256} from './sha256-utils';
 import * as constants from '../constants';
+
+// @ts-ignore
 import peginAddressVerifier from 'pegin-address-verificator';
 
 export const calculateBtcTxHash = (transaction: string) => {
