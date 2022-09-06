@@ -4,7 +4,7 @@ import {
   getLegacyAddressList,
   getNativeSegwitAddressList,
   getSewitAddressList,
-} from '../../helper';
+} from '../../utils/helper';
 import * as constants from '../../../constants';
 
 describe('function: getPeginSatusInfo', () => {

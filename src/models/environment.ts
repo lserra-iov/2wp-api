@@ -1,0 +1,32 @@
+export interface EnvironmentVariables {
+    NETWORK: string;
+    BTC_CONFIRMATIONS: string;
+    FAST_MINING_BLOCK: string;
+    AVERAGE_MINING_BLOCK: string;
+    LOW_MINING_BLOCK: string;
+    BLOCKBOOK_URL: string;
+    MAX_AMOUNT_ALLOWED_IN_SATOSHI: string;
+    SESSIONDB_HOST: string;
+    SESSIONDB_PORT: string;
+    SESSIONDB_PASSWORD: string;
+    SESSIONDB_INDEX: string;
+    RSK_NODE_HOST: string;
+    TTL_SESSIONDB_EXPIRE_MILLISECONDS: string;
+    METRICS_ENABLED: string;
+    SYNC_INITIAL_BLOCK_HEIGHT: string;
+    SYNC_INITIAL_BLOCK_HASH: string;
+    SYNC_INITIAL_BLOCK_PREV_HASH: string;
+    SYNC_MIN_DEPTH: string;
+    SYNC_INTERVAL_TIME: string;
+    RSK_DB_CONNECTION_USER: string;
+    RSK_DB_CONNECTION_PASSWORD: string;
+    RSK_DB_CONNECTION_HOST: string;
+    RSK_DB_CONNECTION_PORT: string;
+    RSK_DB_CONNECTION_DATABASE: string;
+    RSK_DB_CONNECTION_AUTH_SOURCE: string;
+    FEE_PER_KB_FAST_MIN: string;
+    FEE_PER_KB_AVERAGE_MIN: string;
+    FEE_PER_KB_SLOW_MIN: string;
+    MAX_FEE_AMOUNT_ALLOWED: string;
+    BURN_DUST_VALUE: string;
+}

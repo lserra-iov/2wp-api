@@ -8,7 +8,7 @@ import FilteredBridgeTransactionProcessor from '../../../services/filtered-bridg
 import {RskNodeService} from '../../../services/rsk-node.service';
 import {BRIDGE_METHODS, getBridgeSignature} from '../../../utils/bridge-utils';
 import {ensure0x} from '../../../utils/hex-utils';
-import {getRandomAddress, getRandomHash} from '../../helper';
+import {getRandomAddress, getRandomHash} from '../../utils/helper';
 import { PeginDataProcessor } from '../../../services/pegin-data.processor';
 import { RskBlock } from '../../../models/rsk/rsk-block.model';
 import { RskTransaction } from '../../../models/rsk/rsk-transaction.model';
@@ -58,7 +58,7 @@ describe('Service: NodeBridgeDataProvider', () => {
     // Removes the subscriber
     thisService.removeSubscriber(peginDataProcessorSubscriber);
     expect(thisService.getSubscribers()).to.be.empty;
-    
+
   });
 
   it('ignores extra subscribers if they are the same when adding/removing more subscribers', () => {
@@ -85,7 +85,7 @@ describe('Service: NodeBridgeDataProvider', () => {
     thisService.removeSubscriber(peginDataProcessorSubscriber);
     thisService.removeSubscriber(peginDataProcessorSubscriber);
     expect(thisService.getSubscribers()).to.be.empty;
-    
+
   });
 
   it('removes the correct subscriber', () => {
@@ -94,7 +94,7 @@ describe('Service: NodeBridgeDataProvider', () => {
     mockedPeginStatusDataService.stop = sinon.stub();
     const rskNodeService = getRskNodeService();
     const thisService = new NodeBridgeDataProvider(rskNodeService);
-    
+
     const peginDataProcessorSubscriber1 = new PeginDataProcessor(mockedPeginStatusDataService) as FilteredBridgeTransactionProcessor;
     const peginDataProcessorSubscriber2 = new PeginDataProcessor(mockedPeginStatusDataService) as FilteredBridgeTransactionProcessor;
 
@@ -114,7 +114,7 @@ describe('Service: NodeBridgeDataProvider', () => {
     expect(thisService.getSubscribers()).to.not.be.empty;
     expect(thisService.getSubscribers().length).to.equal(1);
     expect(thisService.getSubscribers()[0]).to.not.equal(peginDataProcessorSubscriber2);
-    
+
   });
 
   it('informs subscribers', async () => {

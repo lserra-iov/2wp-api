@@ -8,7 +8,7 @@ import {PeginStatusMongoDbDataService} from '../../../services/pegin-status-data
 import {PeginDataProcessor} from '../../../services/pegin-data.processor';
 import RskBlockProcessorPublisher from '../../../services/rsk-block-processor-publisher';
 import {RskChainSyncService, RskChainSyncSubscriber} from '../../../services/rsk-chain-sync.service';
-import {getRandomHash} from '../../helper';
+import {getRandomHash} from '../../utils/helper';
 
 describe('Service: DaemonService', () => {
   let clock: sinon.SinonFakeTimers;

@@ -1,6 +1,6 @@
 import {randomBytes} from 'crypto';
-import {PeginConfiguration, TxInput, Utxo, WalletAddress} from '../models';
-import {ensure0x} from '../utils/hex-utils';
+import {PeginConfiguration, TxInput, Utxo, WalletAddress} from '../../models';
+import {ensure0x} from '../../utils/hex-utils';
 
 export function getRandomHash(): string {
   return ensure0x(randomBytes(32).toString('hex'));

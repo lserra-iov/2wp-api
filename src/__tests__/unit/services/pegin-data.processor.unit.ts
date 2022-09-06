@@ -6,7 +6,7 @@ import {PeginDataProcessor} from '../../../services/pegin-data.processor';
 import { PeginStatusDataService } from '../../../services/pegin-status-data-services/pegin-status-data.service';
 import {BRIDGE_EVENTS, BRIDGE_METHODS, encodeBridgeMethodParameters, getBridgeSignature} from '../../../utils/bridge-utils';
 import {ensure0x, remove0x} from '../../../utils/hex-utils';
-import {getRandomAddress} from '../../helper';
+import {getRandomAddress} from '../../utils/helper';
 import sinon, {SinonStubbedInstance} from 'sinon';
 import {PeginStatusMongoDbDataService} from '../../../services/pegin-status-data-services/pegin-status-mongo.service';
 
@@ -189,5 +189,5 @@ describe('Service: PeginDataProcessor', () => {
     sinon.assert.neverCalledWith(mockedPeginStatusDataService.getById);
     sinon.assert.neverCalledWith(mockedPeginStatusDataService.set);
   });
-  
+
 });

@@ -7,7 +7,7 @@ import {SessionRepository} from '../../repositories';
 import {TxFeeController} from '../../controllers';
 import {FeeLevel} from '../../services';
 import {sinon} from '@loopback/testlab/dist/sinon';
-import {getMockInputs, getUtxoList} from '../helper';
+import {getMockInputs, getUtxoList} from '../utils/helper';
 import {FeeRequestData} from '../../models';
 import * as constants from '../../constants';
 import {config} from 'dotenv';
