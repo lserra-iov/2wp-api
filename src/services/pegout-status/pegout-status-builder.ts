@@ -26,6 +26,11 @@ export class PegoutStatusBuilder {
     status.rskBlockHash = extendedBridgeTx.blockHash;
     status.originatingRskBlockHash = extendedBridgeTx.blockHash;
     status.isNewestStatus = true;
+    status.federationTotalSignaturesRequired = 1;
+
+    let federationSignatures: string[] = ['fed1', 'fed2', 'fed3'];
+
+    status.federationSignatures = federationSignatures;
 
     return status;
   }

@@ -111,6 +111,10 @@ export class PegoutStatusDbDataModel implements SearchableModel, PegoutStatusDat
 
   rskBlockHash: string;
 
+  federationTotalSignaturesRequired: number;
+
+  federationSignatures: string[];
+
   getId() {
     return this.rskTxHash;
   }
@@ -138,6 +142,8 @@ export class PegoutStatusDbDataModel implements SearchableModel, PegoutStatusDat
     pegoutStatusInstance.feeInSatoshisToBePaid = pegoutStatus.feeInSatoshisToBePaid;
     pegoutStatusInstance.originatingRskBlockHash = pegoutStatus.originatingRskBlockHash;
     pegoutStatusInstance.rskBlockHash = pegoutStatus.rskBlockHash;
+    pegoutStatusInstance.federationSignatures = pegoutStatus.federationSignatures;
+    pegoutStatusInstance.federationTotalSignaturesRequired = pegoutStatus.federationTotalSignaturesRequired;
     return pegoutStatusInstance;
   }
 

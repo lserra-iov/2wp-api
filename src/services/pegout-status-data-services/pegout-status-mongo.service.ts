@@ -28,6 +28,8 @@ const PegoutStatusSchema = new mongoose.Schema({
   isNewestStatus: {type: Boolean, required: true},
   originatingRskBlockHash: {type: String, required: true},
   rskBlockHash: {type: String, required: true},
+  federationTotalSignaturesRequired: {type: Number, required: false},
+  federationSignatures: [{ type: String, required: false}],
 });
 
 const PegoutStatusConnector = mongoose.model<PegoutStatusMongoModel>('PegoutStatus', PegoutStatusSchema);
