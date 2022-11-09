@@ -82,10 +82,6 @@ export class PegoutStatusDbDataModel implements SearchableModel, PegoutStatusDat
   isNewestStatus: boolean;
   originatingRskBlockHash: string;
   rskBlockHash: string;
-  btcRawTxInputsHash: string;
-  batchPegoutIndex: number;
-  batchPegoutRskTxHash: string;
-
   getId() {
     return this.rskTxHash;
   }
