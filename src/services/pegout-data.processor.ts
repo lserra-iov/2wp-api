@@ -54,6 +54,24 @@ export class PegoutDataProcessor implements FilteredBridgeTransactionProcessor {
 
     if(this.hasBatchPegoutEvent(events)) {
       this.logger.trace('[process] found a batch_pegout_created event. Processing...');
+      this.logger.trace('[process] found a batch_pegout_created event. Processing...');
+      this.logger.trace('[process] found a batch_pegout_created event. Processing...');
+      this.logger.trace('[process] found a batch_pegout_created event. Processing...');
+      this.logger.trace('[process] found a batch_pegout_created event. Processing...');
+      this.logger.trace('[process] found a batch_pegout_created event. Processing...');
+      this.logger.trace('[process] found a batch_pegout_created event. Processing...');
+      this.logger.trace('[process] found a batch_pegout_created event. Processing...');
+      this.logger.trace('[process] found a batch_pegout_created event. Processing...');
+      this.logger.trace('[process] found a batch_pegout_created event. Processing...');
+      this.logger.trace('[process] found a batch_pegout_created event. Processing...');
+      this.logger.trace('[process] found a batch_pegout_created event. Processing...');
+      this.logger.trace('[process] found a batch_pegout_created event. Processing...');
+      this.logger.trace('[process] found a batch_pegout_created event. Processing...');
+      this.logger.trace('[process] found a batch_pegout_created event. Processing...');
+      this.logger.trace('[process] found a batch_pegout_created event. Processing...');
+      this.logger.trace('[process] found a batch_pegout_created event. Processing...');
+      this.logger.trace('[process] found a batch_pegout_created event. Processing...');
+
       return await this.processBatchPegouts(extendedBridgeTx);
     }
 
