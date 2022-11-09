@@ -16,6 +16,7 @@ import { PegoutWaitingConfirmation } from 'bridge-state-data-parser';
 import { PegoutStatusBuilder } from './pegout-status/pegout-status-builder';
 import {ExtendedBridgeEvent} from "../models/types/bridge-transaction-parser";
 import { sha256 } from '../utils/sha256-utils';
+import { rejectNavigationalPropertiesInData } from '@loopback/repository';
 
 export class PegoutDataProcessor implements FilteredBridgeTransactionProcessor {
   private logger: Logger;
@@ -239,6 +240,7 @@ export class PegoutDataProcessor implements FilteredBridgeTransactionProcessor {
     } catch(e) {
       this.logger.warn('[processBatchPegouts] There was a problem with the storage', e);
     }
+
   }
 
   private async addBatchValueInSatoshisToBeReceivedAndFee(pegoutStatuses: PegoutStatusDbDataModel[], rskTxHash: string): Promise<void> {
@@ -427,11 +429,10 @@ export class PegoutDataProcessor implements FilteredBridgeTransactionProcessor {
  }
 
   private async saveManyAsWaitingForSignature(pegouts: PegoutStatusDbDataModel[]) {
-    for (const pegout of pegouts) {
+    pegouts.forEach((pegout) => {
       pegout.status = PegoutStatus.WAITING_FOR_SIGNATURE;
-      const saved = await this.pegoutStatusDataService.set(pegout);
-      this.logger.warn('[saveMany] Pegout saved on the storage', saved);
-    };
+      this.pegoutStatusDataService.set(pegout).catch((e) => console.log(`Error trying to save pegout ${e}`));
+    });
   }
 
   public async deleteByRskBlockHeight(rskBlockHeight: number) {

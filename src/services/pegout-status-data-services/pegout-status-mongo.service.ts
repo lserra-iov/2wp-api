@@ -25,9 +25,6 @@ const PegoutStatusSchema = new mongoose.Schema({
   isNewestStatus: {type: Boolean, required: true},
   originatingRskBlockHash: {type: String, required: true},
   rskBlockHash: {type: String, required: true},
-  btcRawTxInputsHash: {type: String},
-  batchPegoutIndex: {type: String},
-  batchPegoutRskTxHash: {type: Number},
 });
 
 const PegoutStatusConnector = mongoose.model<PegoutStatusMongoModel>("PegoutStatus", PegoutStatusSchema);
@@ -54,11 +51,10 @@ export class PegoutStatusMongoDbDataService extends MongoDbDataService<PegoutSta
       .then(() => true);
   }
 
-  public async getManyByOriginatingRskTxHash(originatingRskTxHash: string): Promise<PegoutStatusDbDataModel[]> {
-    const pegoutsDocuments = await this.getConnector()
+  public getManyByOriginatingRskTxHash(originatingRskTxHash: string): Promise<PegoutStatusDbDataModel[]> {
+    return this.getConnector()
     .find({originatingRskTxHash})
     .exec();
-    return pegoutsDocuments.map(PegoutStatusDbDataModel.clonePegoutStatusInstance);
   }
 
   public async getLastByOriginatingRskTxHash(originatingRskTxHash: string): Promise<PegoutStatusDbDataModel | null> {
