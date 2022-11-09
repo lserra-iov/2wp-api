@@ -16,7 +16,6 @@ import { PegoutWaitingConfirmation } from 'bridge-state-data-parser';
 import { PegoutStatusBuilder } from './pegout-status/pegout-status-builder';
 import {ExtendedBridgeEvent} from "../models/types/bridge-transaction-parser";
 import { sha256 } from '../utils/sha256-utils';
-import { rejectNavigationalPropertiesInData } from '@loopback/repository';
 
 export class PegoutDataProcessor implements FilteredBridgeTransactionProcessor {
   private logger: Logger;
@@ -55,24 +54,6 @@ export class PegoutDataProcessor implements FilteredBridgeTransactionProcessor {
 
     if(this.hasBatchPegoutEvent(events)) {
       this.logger.trace('[process] found a batch_pegout_created event. Processing...');
-      this.logger.trace('[process] found a batch_pegout_created event. Processing...');
-      this.logger.trace('[process] found a batch_pegout_created event. Processing...');
-      this.logger.trace('[process] found a batch_pegout_created event. Processing...');
-      this.logger.trace('[process] found a batch_pegout_created event. Processing...');
-      this.logger.trace('[process] found a batch_pegout_created event. Processing...');
-      this.logger.trace('[process] found a batch_pegout_created event. Processing...');
-      this.logger.trace('[process] found a batch_pegout_created event. Processing...');
-      this.logger.trace('[process] found a batch_pegout_created event. Processing...');
-      this.logger.trace('[process] found a batch_pegout_created event. Processing...');
-      this.logger.trace('[process] found a batch_pegout_created event. Processing...');
-      this.logger.trace('[process] found a batch_pegout_created event. Processing...');
-      this.logger.trace('[process] found a batch_pegout_created event. Processing...');
-      this.logger.trace('[process] found a batch_pegout_created event. Processing...');
-      this.logger.trace('[process] found a batch_pegout_created event. Processing...');
-      this.logger.trace('[process] found a batch_pegout_created event. Processing...');
-      this.logger.trace('[process] found a batch_pegout_created event. Processing...');
-      this.logger.trace('[process] found a batch_pegout_created event. Processing...');
-
       return await this.processBatchPegouts(extendedBridgeTx);
     }
 
@@ -200,12 +181,12 @@ export class PegoutDataProcessor implements FilteredBridgeTransactionProcessor {
       return;
     }
 
-    const originatingRskTxHash = <string> batchPegoutsEvent.arguments.releaseRskTxHashes;
+    const originatingRskTxHash = <string> batchPegoutsEvent.arguments.rskTxHash;
     const btcTxHash = <string> batchPegoutsEvent.arguments.btcTxHash;
 
-    const foundPegoutStatuses:PegoutStatusDbDataModel[]  = await this.pegoutStatusDataService.getManyByOriginatingRskTxHash(originatingRskTxHash);
+    const foundPegoutStatuses = await this.pegoutStatusDataService.getManyByOriginatingRskTxHash(originatingRskTxHash);
     
-    if(!foundPegoutStatuses || foundPegoutStatuses.length === 0) {
+    if(!foundPegoutStatuses) {
       return this.logger.warn(`[processWaitingForConfirmationStatus] could not find a pegout status record
        in the db for this transaction '${extendedBridgeTx.txHash}' with 'release_requested' event.`);
     }
@@ -213,7 +194,7 @@ export class PegoutDataProcessor implements FilteredBridgeTransactionProcessor {
     this.logger.trace(`[processBatchPegouts] found ${foundPegoutStatuses.length} pegouts in the db
       for the batch pegout ${extendedBridgeTx.txHash}`);
 
-      const newClonedPegoutStatuses:PegoutStatusDbDataModel[] = foundPegoutStatuses.map((foundPegoutStatus, index) => {
+      const newClonedPegoutStatuses = foundPegoutStatuses.map((foundPegoutStatus, index) => {
         const newPegoutStatus: PegoutStatusDbDataModel = PegoutStatusDbDataModel.clonePegoutStatusInstance(foundPegoutStatus);
         newPegoutStatus.btcRecipientAddress = foundPegoutStatus.btcRecipientAddress;
         // Many pegouts with HOP will share the same rskTxHash, so, appending the index to differentiate them
@@ -234,9 +215,11 @@ export class PegoutDataProcessor implements FilteredBridgeTransactionProcessor {
 
     try {
       foundPegoutStatuses.forEach(pegout => pegout.isNewestStatus = false);
-      const allPegouts = [...foundPegoutStatuses, ...newClonedPegoutStatuses];
-      await this.saveMany(allPegouts);
-      this.logger.trace(`[processBatchPegouts] ${allPegouts.length} pegouts was updated.`);
+      await this.saveMany(foundPegoutStatuses);
+      this.logger.trace(`[processBatchPegouts] ${foundPegoutStatuses.length} pegouts in RECEIVED updated.`);
+      await this.saveMany(newClonedPegoutStatuses);
+      this.logger.trace(`[processBatchPegouts] ${newClonedPegoutStatuses.length} pegouts in WAITING_FOR_CONFIRMATION saved.`);
+
     } catch(e) {
       this.logger.warn('[processBatchPegouts] There was a problem with the storage', e);
     }
@@ -328,14 +311,14 @@ export class PegoutDataProcessor implements FilteredBridgeTransactionProcessor {
     await this.persistPegout(newPegoutStatus, foundPegoutStatus);
   }
 
-  private async persistPegout(newPegoutStatus: PegoutStatusDbDataModel, oldPegoutStatus:PegoutStatusDbDataModel) {
+  private async persistPegout(newPegoutStatus: PegoutStatusDbDataModel, foundPegoutStatus:PegoutStatusDbDataModel) {
     newPegoutStatus.isNewestStatus = true;
     await this.addValueInSatoshisToBeReceivedAndFee(newPegoutStatus);
 
     try {
-      oldPegoutStatus.isNewestStatus = false;
-      await this.pegoutStatusDataService.set(oldPegoutStatus);
-      this.logger.trace(`[processWaitingForConfirmationStatus] pegout status for ${oldPegoutStatus.btcTxHash} updated.`);
+      foundPegoutStatus.isNewestStatus = false;
+      await this.pegoutStatusDataService.set(foundPegoutStatus);
+      this.logger.trace(`[processWaitingForConfirmationStatus] pegout status for ${foundPegoutStatus.btcTxHash} updated.`);
       await this.pegoutStatusDataService.set(newPegoutStatus);
       this.logger.trace(`[processWaitingForConfirmationStatus] pegout status for ${newPegoutStatus.originatingRskTxHash} updated.`);
     } catch(e) {
@@ -422,16 +405,15 @@ export class PegoutDataProcessor implements FilteredBridgeTransactionProcessor {
   }
 
   private async saveMany(pegouts: PegoutStatusDbDataModel[]) {
-      for (const pegout of pegouts) {
-        const saved = await this.pegoutStatusDataService.set(pegout);
-        this.logger.warn('[saveMany] Pegout saved on the storage', saved);
-      }
- }
+    pegouts.forEach(async (pegout) => {
+      await this.pegoutStatusDataService.set(pegout);
+    });
+  }
 
   private async saveManyAsWaitingForSignature(pegouts: PegoutStatusDbDataModel[]) {
-    pegouts.forEach((pegout) => {
+    pegouts.forEach(async (pegout) => {
       pegout.status = PegoutStatus.WAITING_FOR_SIGNATURE;
-      this.pegoutStatusDataService.set(pegout).catch((e) => console.log(`Error trying to save pegout ${e}`));
+      await this.pegoutStatusDataService.set(pegout);
     });
   }
 
