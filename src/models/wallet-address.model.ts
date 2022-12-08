@@ -32,5 +32,3 @@ export class WalletAddress extends Model {
     super(data);
   }
 }
-
-export type WalletAddressWithRelations = WalletAddress;

@@ -36,12 +36,12 @@ export class UnusedAddressService {
           address: bitcoinAddress.address,
           unused,
         }));
-        this.logger.trace(`[isUnusedAddresses] ${bitcoinAddress} is ${unused ? 'unused' : 'used'}`);
+        this.logger.debug(`[isUnusedAddresses] ${bitcoinAddress.address} is ${unused ? 'unused' : 'used'}`);
       }
       return response;
     })
     .catch((e: unknown) => {
-       this.logger.debug(`[isUnusedAddresses] Failed. ${e}`);
+       this.logger.error(`[isUnusedAddresses] Failed. ${e}`);
        throw e;
      });
   }

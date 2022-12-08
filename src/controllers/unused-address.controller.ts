@@ -31,7 +31,7 @@ export class UnusedAddressController {
     @requestBody({schema: getModelSchemaRef(AddressList)})
     addressList: AddressList,
   ): Promise<UnusedAddressResponse> {
-    this.logger.trace(`[isUnusedAddresses] Starting with addressList ${addressList.addressList}`);
+    this.logger.trace(`[isUnusedAddresses] Starting with addressList ${JSON.stringify(addressList.addressList)}`);
     return this.unusedAddressService.isUnusedAddresses(addressList.addressList);
   }
 }
